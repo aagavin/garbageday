@@ -32,6 +32,8 @@ def get_end_of_week(area_day):
     offset = date_map[area_day]
     dt = datetime.now().date()
     start = dt - timedelta(days=dt.weekday())
+    if dt.weekday() > offset:
+        return (start + timedelta(days=offset+8)).strftime('%Y/%m/%d')
     return (start + timedelta(days=offset)).strftime('%Y/%m/%d')
 
 
@@ -48,9 +50,7 @@ def lambda_handler(event, context):
     end_week = get_end_of_week(area_date[:-1])
     gsheet = c_session.get(SHEET_URL).text
     csv_dict = csv.DictReader(StringIO(gsheet))
-
     for row in csv_dict:
         if row["Calendar"] == area_date and row["WeekStarting"] == end_week:
-            val_tuple = row, csv_dict.__next__()
-    val_tuple
-    return ''
+            return row, csv_dict.__next__()
+    return ()
