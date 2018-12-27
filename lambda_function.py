@@ -17,6 +17,8 @@ c_session = CacheControl(s)
 
 SMPT_PORT = 465  # For SSL
 SMPT_USERNAME = os.getenv('SMPT_USERNAME', '')
+SMPT_FROM = os.getenv('SMPT_FROM', '')
+SMPT_TO = os.getenv('SMPT_TO', '')
 SMPT_PASS = os.getenv('SMPT_PASS', '')
 SMPT_CONTEXT = ssl.create_default_context()
 
@@ -38,6 +40,7 @@ date_map = {
 
 
 def get_end_of_week(area_day) -> str:
+    # TODO: Fix to get week of the year instead
     offset = date_map[area_day]
     dt = datetime.now().date()
     start = dt - timedelta(days=dt.weekday())
@@ -65,11 +68,11 @@ def get_collection_schedule(event) -> tuple:
     return ()
 
 
+# def get_message_str()
+
 def lambda_handler(event, context):
     schedule: tuple = get_collection_schedule(event)
-    with smtplib.SMTP('smtp.fastmail.com', SMPT_PORT) as server:
-        server.ehlo()  # Can be omitted
-        server.starttls(context=SMPT_CONTEXT)
-        server.ehlo()  # Can be omitted
+    return ''
+    with smtplib.SMTP_SSL('smtp.fastmail.com', SMPT_PORT, context=SMPT_CONTEXT) as server:
         server.login(SMPT_USERNAME, SMPT_PASS)
-        server.sendmail(SMPT_USERNAME, SMPT_USERNAME, '')
+        server.sendmail(SMPT_FROM, SMPT_TO, 'heelo')
