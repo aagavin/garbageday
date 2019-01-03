@@ -2,7 +2,7 @@ import csv
 import os
 import smtplib
 import ssl
-from datetime import datetime, timedelta
+import datetime
 from io import StringIO
 
 import requests
@@ -30,24 +30,6 @@ query_gis = {
     'f': 'pjson'
 }
 
-date_map = {
-    'Monday': 0,
-    'Tuesday': 1,
-    'Wednesday': 2,
-    'Thursday': 3,
-    'Friday': 4,
-}
-
-
-def get_end_of_week(area_day) -> str:
-    # TODO: Fix to get week of the year instead
-    offset = date_map[area_day]
-    dt = datetime.now().date()
-    start = dt - timedelta(days=dt.weekday())
-    if dt.weekday() > offset:
-        return (start + timedelta(days=offset + 8)).strftime('%Y/%m/%d')
-    return (start + timedelta(days=offset)).strftime('%Y/%m/%d')
-
 
 def get_collection_schedule(event) -> tuple:
     address: str = event['address']
@@ -59,20 +41,25 @@ def get_collection_schedule(event) -> tuple:
     query_gis['geometry'] = f'{long},{lat}'
     gis_r: dict = c_session.get(GIS_URL, params=query_gis).json()
     area_date = gis_r['features'][0]['attributes']['AREA_NAME'].replace(' ', '')
-    end_week = get_end_of_week(area_date[:-1])
+    end_week = datetime.datetime.now().date().isocalendar()
+    index = 1
     gsheet = c_session.get(SHEET_URL).text
     csv_dict = csv.DictReader(StringIO(gsheet))
     for row in csv_dict:
-        if row["Calendar"] == area_date and row["WeekStarting"] == end_week:
-            return row, csv_dict.__next__()
+        if row["Calendar"] == area_date:
+            if row["Calendar"] == area_date and end_week[1] == index and int(row['WeekStarting'][:4]) == end_week[0]:
+                return row, csv_dict.__next__()
+            elif row["Calendar"] == area_date and row['WeekStarting'][:4] == end_week[0]:
+                index = index + 1
     return ()
 
 
-# def get_message_str()
+def get_message_str(next_two: tuple) -> str:
+    return ''
+
 
 def lambda_handler(event, context):
     schedule: tuple = get_collection_schedule(event)
-    return ''
     with smtplib.SMTP_SSL('smtp.fastmail.com', SMPT_PORT, context=SMPT_CONTEXT) as server:
         server.login(SMPT_USERNAME, SMPT_PASS)
         server.sendmail(SMPT_FROM, SMPT_TO, 'heelo')
