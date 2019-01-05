@@ -53,12 +53,19 @@ def get_collection_schedule(event) -> tuple:
     return ()
 
 
-def get_message_str(next_two: tuple) -> str:
-    return ''
+def get_message_str(next_day) -> str:
+    day = datetime.datetime.strptime(next_day['WeekStarting'], '%Y/%m/%d').strftime('%A, %b %d')
+    collection_items = ''
+    for key, value in next_day.items():
+        if len(value) == 1 and value != '0':
+            collection_items = collection_items + key + '\n'
+    return f'Garbage day is on {day}\n\nItems Collected:\n{collection_items}'
 
 
 def lambda_handler(event, context):
     schedule: tuple = get_collection_schedule(event)
-    with smtplib.SMTP_SSL('smtp.fastmail.com', SMPT_PORT, context=SMPT_CONTEXT) as server:
+    message = get_message_str(schedule[0])
+    with smtplib.SMTP_SSL(SMPT_DOMAIN, SMPT_PORT, context=SMPT_CONTEXT) as server:
         server.login(SMPT_USERNAME, SMPT_PASS)
-        server.sendmail(SMPT_FROM, SMPT_TO, 'heelo')
+        server.sendmail(SMPT_FROM, SMPT_TO, message)
+    return f'result successfully sent {message}'
