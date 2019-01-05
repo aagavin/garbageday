@@ -58,7 +58,7 @@ def get_message_str(next_day) -> str:
     collection_items = ''
     for key, value in next_day.items():
         if len(value) == 1 and value != '0':
-            collection_items = collection_items + key + '\n'
+            collection_items += key + '\n'
     return f'Garbage day is on {day}\n\nItems Collected:\n{collection_items}'
 
 
