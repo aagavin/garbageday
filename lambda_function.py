@@ -47,9 +47,9 @@ def get_collection_schedule(event) -> tuple:
     csv_dict = csv.DictReader(StringIO(gsheet))
     for row in csv_dict:
         if row["Calendar"] == area_date:
-            if row["Calendar"] == area_date and end_week[1] == index and int(row['WeekStarting'][:4]) == end_week[0]:
+            if end_week[1] == index and int(row['WeekStarting'][:4]) == end_week[0]:
                 return row, csv_dict.__next__()
-            elif row["Calendar"] == area_date and row['WeekStarting'][:4] == end_week[0]:
+            elif row['WeekStarting'][:4] == end_week[0]:
                 index = index + 1
     return ()
 
