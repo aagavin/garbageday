@@ -14,10 +14,11 @@ SHEET_URL = 'https://docs.google.com/spreadsheets/d/1Om0nwrYzeombeuMf-1pMksyG7oa
 session = requests.session()
 
 SMPT_PORT = 465  # For SSL
-SMPT_USERNAME = os.getenv('SMPT_USERNAME', '')
-SMPT_FROM = os.getenv('SMPT_FROM', '')
-SMPT_TO = os.getenv('SMPT_TO', '')
-SMPT_PASS = os.getenv('SMPT_PASS', '')
+SMPT_USERNAME = os.getenv('SMPT_USERNAME')
+SMPT_FROM = os.getenv('SMPT_FROM')
+SMPT_TO = os.getenv('SMPT_TO')
+SMPT_PASS = os.getenv('SMPT_PASS')
+SMPT_DOMAIN = os.getenv('SMPT_DOMAIN')
 SMPT_CONTEXT = ssl.create_default_context()
 
 query_gis = {
@@ -41,7 +42,7 @@ def get_collection_schedule(event) -> tuple:
     area_date = gis_r['features'][0]['attributes']['AREA_NAME'].replace(' ', '')
     end_week = datetime.datetime.now().date().isocalendar()
     index = 1
-    gsheet = c_session.get(SHEET_URL).text
+    gsheet = session.get(SHEET_URL).text
     csv_dict = csv.DictReader(StringIO(gsheet))
     for row in csv_dict:
         if row["Calendar"] == area_date:
