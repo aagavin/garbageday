@@ -1,3 +1,6 @@
+[![CodeFactor](https://www.codefactor.io/repository/github/aagavin/garbageday/badge)](https://www.codefactor.io/repository/github/aagavin/garbageday)
+
+
 Garbage Day
 ===========
 
