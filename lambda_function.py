@@ -66,7 +66,7 @@ def get_message_str(next_day) -> str:
     for key, value in next_day.items():
         if len(value) == 1 and value != '0':
             collection_items += key + '\n'
-    return f'Garbage day is on {day}\n\nItems Collected:\n{collection_items}'
+    return f'.\r\n\r\n\r\nGarbage day is on {day}\n\nItems Collected:\r\n{collection_items}'
 
 
 def lambda_handler(event, context):
