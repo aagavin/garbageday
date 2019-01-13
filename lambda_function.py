@@ -33,10 +33,16 @@ query_gis = {
 def get_collection_schedule(event) -> tuple:
     address: str = event['address']
     map_r: dict = session.get(MAP_URL, params={'searchString': address}).json()
-    long, lat = (
-        map_r['result']['bestResult'][0]['longitude'],
-        map_r['result']['bestResult'][0]['latitude']
-    )
+    if map_r['result']['bestResult']:
+        long, lat = (
+            map_r['result']['bestResult'][0]['longitude'],
+            map_r['result']['bestResult'][0]['latitude']
+        )
+    else:
+        long, lat = (
+            map_r['result']['restOfResults'][0]['longitude'],
+            map_r['result']['restOfResults'][0]['latitude']
+        )
     query_gis['geometry'] = f'{long},{lat}'
     gis_r: dict = session.get(GIS_URL, params=query_gis).json()
     area_date = gis_r['features'][0]['attributes']['AREA_NAME'].replace(' ', '')
