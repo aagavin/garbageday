@@ -10,7 +10,7 @@ import requests
 MAP_URL = 'https://map.toronto.ca/geoservices/rest/search/rankedsearch'
 GIS_URL = 'https://gis.toronto.ca/arcgis/rest/services/primary/cot_geospatial21_mtm/MapServer/3/query'
 SHEET_URL = 'https://docs.google.com/spreadsheets/d/1Om0nwrYzeombeuMf-1pMksyG7oaTdXVpN3vR7-qrjdo/export?format=csv'
-
+NO_RESULTS_ERROR = 'No results found'
 session = requests.session()
 
 SMPT_PORT = 465  # For SSL
@@ -64,6 +64,9 @@ def get_message_str(next_day) -> str:
 
 def lambda_handler(event, context):
     schedule: tuple = get_collection_schedule(event)
+    if not schedule:
+        print(NO_RESULTS_ERROR)
+        raise ValueError(NO_RESULTS_ERROR)
     message = get_message_str(schedule[0])
     with smtplib.SMTP_SSL(SMPT_DOMAIN, SMPT_PORT, context=SMPT_CONTEXT) as server:
         server.login(SMPT_USERNAME, SMPT_PASS)
