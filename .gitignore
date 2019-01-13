@@ -67,3 +67,6 @@ venv.bak/
 
 # zip files
 *.zip
+
+# runner
+lambda_runner.py
