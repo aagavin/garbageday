@@ -47,7 +47,7 @@ def get_collection_schedule(event) -> tuple:
     gis_r: dict = session.get(GIS_URL, params=query_gis).json()
     area_date = gis_r['features'][0]['attributes']['AREA_NAME'].replace(' ', '')
     end_week = datetime.datetime.now().date().isocalendar()
-    index = 0
+    index = 1
     gsheet = session.get(SHEET_URL).text
     csv_dict = csv.DictReader(StringIO(gsheet))
     for row in csv_dict:
