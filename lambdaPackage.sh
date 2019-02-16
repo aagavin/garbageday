@@ -3,7 +3,10 @@
 #
 # Generates zip for upload to aws lambda
 #
-source venv/bin/activate
+if [[ "$inCodeBuild" -ne "true" ]]
+    then
+        source venv/bin/activate
+fi
 rm -rf ./lambda/ ./lambda.zip
 mkdir ./lambda
 cp *.py ./lambda/
@@ -12,4 +15,7 @@ pip install -r ../requirements.txt -t .
 zip -r ../lambda.zip ./*
 cd ..
 rm -rf ./lambda/
-deactivate
+if [[ "$inCodeBuild" -ne "true" ]]
+    then
+        deactivate
+fi
