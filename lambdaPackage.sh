@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 #
-# Generates zip for upload to aws lambda
+# Generates zip for local upload to aws lambda
 #
 if [[ "$inCodeBuild" -ne "true" ]]
     then
