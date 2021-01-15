@@ -57,10 +57,12 @@ def get_collection_schedule(event) -> tuple:
 
 def get_message_str(next_day) -> str:
     day = datetime.datetime.strptime(next_day['WeekStarting'], '%Y/%m/%d').strftime('%A, %b %d')
-    collection_items = ''
-    for key, value in next_day.items():
-        if len(value) == 1 and value != '0':
-            collection_items += key + '\n'
+    collection_items = ''.join(
+        key + '\n'
+        for key, value in next_day.items()
+        if len(value) == 1 and value != '0'
+    )
+
     return f'.\r\n\r\n\r\nGarbage day is on {day}\n\nItems Collected:\r\n{collection_items}'
 
 
