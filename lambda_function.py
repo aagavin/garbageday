@@ -46,26 +46,23 @@ def get_collection_schedule(event) -> tuple:
     query_gis['geometry'] = f'{long},{lat}'
     gis_r: dict = session.get(GIS_URL, params=query_gis).json()
     area_date = gis_r['features'][0]['attributes']['AREA_NAME'].replace(' ', '')
-    end_week = datetime.datetime.now().date().isocalendar()
-    index = 1
+    date = datetime.datetime.now().date()
     gsheet = session.get(SHEET_URL).text
-    csv_dict = csv.DictReader(StringIO(gsheet))
+    csv_dict: csv.DictReader = csv.DictReader(StringIO(gsheet))
     for row in csv_dict:
-        if row["Calendar"] == area_date:
-            week_starting: int = int(row['WeekStarting'][:4])
-            if end_week[1] == index and week_starting == end_week[0]:
-                return row, csv_dict.__next__()
-            elif week_starting == end_week[0]:
-                index = index + 1
+        if row["Calendar"] == area_date and row['WeekStarting'][:7] == date.strftime('%Y/%m/%d')[:7] and row['WeekStarting'][8:] > date.strftime('%Y/%m/%d')[8:]:
+            return row, csv_dict.__next__()
     return ()
 
 
 def get_message_str(next_day) -> str:
     day = datetime.datetime.strptime(next_day['WeekStarting'], '%Y/%m/%d').strftime('%A, %b %d')
-    collection_items = ''
-    for key, value in next_day.items():
-        if len(value) == 1 and value != '0':
-            collection_items += key + '\n'
+    collection_items = ''.join(
+        key + '\n'
+        for key, value in next_day.items()
+        if len(value) == 1 and value != '0'
+    )
+
     return f'.\r\n\r\n\r\nGarbage day is on {day}\n\nItems Collected:\r\n{collection_items}'
 
 
