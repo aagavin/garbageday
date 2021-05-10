@@ -5,13 +5,13 @@ import ssl
 import datetime
 from io import StringIO
 
-import requests
+import httpx
 
 MAP_URL = 'https://map.toronto.ca/geoservices/rest/search/rankedsearch'
 GIS_URL = 'https://gis.toronto.ca/arcgis/rest/services/primary/cot_geospatial21_mtm/MapServer/3/query'
 SHEET_URL = 'https://docs.google.com/spreadsheets/d/1Om0nwrYzeombeuMf-1pMksyG7oaTdXVpN3vR7-qrjdo/export?format=csv'
 NO_RESULTS_ERROR = 'No results found'
-session = requests.session()
+session = httpx.Client()
 
 SMPT_PORT = 465  # For SSL
 SMPT_USERNAME = os.getenv('SMPT_USERNAME')
@@ -63,7 +63,13 @@ def get_message_str(next_day) -> str:
         if len(value) == 1 and value != '0'
     )
 
-    return f'.\r\n\r\n\r\nGarbage day is on {day}\n\nItems Collected:\r\n{collection_items}'
+    # return f'.\r\n\r\n\r\nGarbage day is on {day}\n\nItems Collected:\r\n{collection_items}'
+    return f"""
+
+Garbage day is on {day}
+Items Collected:
+{collection_items}
+    """
 
 
 def lambda_handler(event, context):
