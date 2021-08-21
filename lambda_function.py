@@ -4,6 +4,7 @@ import smtplib
 import ssl
 import datetime
 from io import StringIO
+from email.message import EmailMessage
 
 import httpx
 
@@ -77,8 +78,15 @@ def lambda_handler(event, context):
     if not schedule:
         print(NO_RESULTS_ERROR)
         raise ValueError(NO_RESULTS_ERROR)
+    
     message = get_message_str(schedule[0])
+    
+    email = EmailMessage()
+    email.set_content(message)
+    email['From'] = SMPT_FROM
+    email['TO'] = SMPT_TO
+
     with smtplib.SMTP_SSL(SMPT_DOMAIN, SMPT_PORT, context=SMPT_CONTEXT) as server:
         server.login(SMPT_USERNAME, SMPT_PASS)
-        server.sendmail(SMPT_FROM, SMPT_TO, message)
+        mail = server.send_message(email)
     return f'result successfully sent {message}'
