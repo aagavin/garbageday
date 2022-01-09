@@ -10,7 +10,7 @@ import httpx
 
 MAP_URL = 'https://map.toronto.ca/geoservices/rest/search/rankedsearch'
 GIS_URL = 'https://gis.toronto.ca/arcgis/rest/services/primary/cot_geospatial21_mtm/MapServer/3/query'
-SHEET_URL = 'https://docs.google.com/spreadsheets/d/1Om0nwrYzeombeuMf-1pMksyG7oaTdXVpN3vR7-qrjdo/export?format=csv'
+SHEET_URL = 'https://ckan0.cf.opendata.inter.prod-toronto.ca/download_resource/6686b0d0-afa3-4d2e-be2b-5fe37bde7872?format=csv'
 NO_RESULTS_ERROR = 'No results found'
 session = httpx.Client()
 
@@ -52,13 +52,14 @@ def get_collection_schedule(event) -> tuple:
     csv_dict: csv.DictReader = csv.DictReader(StringIO(gsheet))
     for row in csv_dict:
         # >= date.strftime('%Y/%m/%d')[8:]:
-        if row["Calendar"] == area_date and row['WeekStarting'][:7] == date.strftime('%Y/%m/%d')[:7] and row['WeekStarting'][8:] > date.strftime('%Y/%m/%d')[8:]:
-            return row, csv_dict.__next__()
+        if row["Calendar"] == area_date:
+            if row['WeekStarting'][:7] == date.strftime('%Y-%m-%d')[:7] and row['WeekStarting'][8:] > date.strftime('%Y-%m-%d')[8:]:
+                return row, csv_dict.__next__()
     return ()
 
 
 def get_message_str(next_day) -> str:
-    day = datetime.datetime.strptime(next_day['WeekStarting'], '%Y/%m/%d').strftime('%A, %b %d')
+    day = datetime.datetime.strptime(next_day['WeekStarting'], '%Y-%m-%d').strftime('%A, %b %d')
     collection_items = ''.join(
         key + '\n'
         for key, value in next_day.items()
