@@ -2,7 +2,7 @@ anyio==3.6.1
 certifi==2021.10.8
 charset-normalizer==2.0.12
 h11==0.13.0
-httpcore==0.14.7
+httpcore==0.15.0
 httpx==0.22.0
 idna==3.3
 rfc3986==2.0.0
