@@ -1,5 +1,5 @@
 anyio==3.6.1
-certifi==2022.6.15.1
+certifi==2022.9.14
 charset-normalizer==2.1.1
 h11==0.13.0
 httpcore==0.15.0
