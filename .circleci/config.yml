@@ -21,7 +21,7 @@ jobs:
           name: install dependencies
           command: |
             pwd
-            python3 -m venv venv
+            /home/circleci/repo/venv/bin/python3 -m venv venv
             . venv/bin/activate
             pip install -r requirements.txt -t .
             zip -r lambda.zip .
