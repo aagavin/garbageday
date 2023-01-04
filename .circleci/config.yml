@@ -20,6 +20,7 @@ jobs:
       - run:
           name: install dependencies
           command: |
+            ls -la
             python -m venv venv
             . venv/bin/activate
             pip install -r requirements.txt -t .
