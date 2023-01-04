@@ -24,7 +24,8 @@ jobs:
           command: |
             pwd
             ls -la
-            zip -r lambda.zip . -x '*.git*'
+            cp -r venv/lib/python3.9/site-packages/* .
+            zip -r lambda.zip lambda_function.py lambda_runner.py  -x '*.git*'
       - store_artifacts:
           path: ./lambda.zip
           destination: lambda.zip
