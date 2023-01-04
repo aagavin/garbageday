@@ -23,7 +23,7 @@ jobs:
           command: |
             pwd
             ls -la
-            zip -r lambda.zip .
+            zip -r lambda.zip . -x '*.git*'
       - store_artifacts:
           path: ./lambda.zip
           destination: lambda.zip
