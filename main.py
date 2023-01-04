@@ -74,8 +74,8 @@ Items Collected:
 {collection_items}"""
 
 
-def lambda_handler(event, context):
-    schedule: tuple = get_collection_schedule(event)
+def lambda_handler(user: dict):
+    schedule: tuple = get_collection_schedule(user)
     if not schedule:
         print(NO_RESULTS_ERROR)
         raise ValueError(NO_RESULTS_ERROR)
@@ -91,3 +91,10 @@ def lambda_handler(event, context):
         server.login(SMPT_USERNAME, SMPT_PASS)
         mail = server.send_message(email)
     return f'result successfully sent {message}'
+
+
+if __name__ == "__main__":
+    user = {
+        "address": os.environ['ADDRESS']
+    }
+    lambda_handler(user)
