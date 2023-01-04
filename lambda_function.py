@@ -48,10 +48,15 @@ def get_collection_schedule(event) -> tuple:
     date = datetime.datetime.now().date()
     gsheet = session.get(SHEET_URL, follow_redirects=True).json()
     day_list_filtered = [d for d in gsheet if d['Schedule'] == area_date]
-    for row in iter(day_list_filtered):
-        if row['CollectionDate'][:7] == date.strftime('%Y-%m-%d')[:7] and row['CollectionDate'][8:] > date.strftime('%Y-%m-%d')[8:]:
-            return row, None
-    return ()
+    return next(
+        (
+            (row, None)
+            for row in iter(day_list_filtered)
+            if row['CollectionDate'][:7] == date.strftime('%Y-%m-%d')[:7]
+            and row['CollectionDate'][8:] > date.strftime('%Y-%m-%d')[8:]
+        ),
+        (),
+    )
 
 
 def get_message_str(next_day) -> str:
