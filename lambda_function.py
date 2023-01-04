@@ -1,16 +1,14 @@
-import csv
 import os
 import smtplib
 import ssl
 import datetime
-from io import StringIO
 from email.message import EmailMessage
 
 import httpx
 
 MAP_URL = 'https://map.toronto.ca/geoservices/rest/search/rankedsearch'
 GIS_URL = 'https://gis.toronto.ca/arcgis/rest/services/primary/cot_geospatial21_mtm/MapServer/3/query'
-SHEET_URL = 'https://ckan0.cf.opendata.inter.prod-toronto.ca/dataset/7b70189a-aede-42f1-b092-8708fa4f5fc3/resource/a03d8450-9f29-475b-a361-864f4c39868a/download/pickup-schedule-2022.csv'
+SHEET_URL = 'https://ckan0.cf.opendata.inter.prod-toronto.ca/dataset/7b70189a-aede-42f1-b092-8708fa4f5fc3/resource/a7994f3a-6ba3-4b6f-9fe0-a58184efd5b3/download/pickup-schedule-2023.json'
 NO_RESULTS_ERROR = 'No results found'
 session = httpx.Client()
 
@@ -48,22 +46,20 @@ def get_collection_schedule(event) -> tuple:
     gis_r: dict = session.get(GIS_URL, params=query_gis).json()
     area_date = gis_r['features'][0]['attributes']['AREA_NAME'].replace(' ', '')
     date = datetime.datetime.now().date()
-    gsheet = session.get(SHEET_URL, follow_redirects=True).text
-    csv_dict: csv.DictReader = csv.DictReader(StringIO(gsheet))
-    for row in csv_dict:
-        # >= date.strftime('%Y/%m/%d')[8:]:
-        if row["Calendar"] == area_date:
-            if row['WeekStarting'][:7] == date.strftime('%Y-%m-%d')[:7] and row['WeekStarting'][8:] > date.strftime('%Y-%m-%d')[8:]:
-                return row, csv_dict.__next__()
+    gsheet = session.get(SHEET_URL, follow_redirects=True).json()
+    day_list_filtered = [d for d in gsheet if d['Schedule'] == area_date]
+    for row in iter(day_list_filtered):
+        if row['CollectionDate'][:7] == date.strftime('%Y-%m-%d')[:7] and row['CollectionDate'][8:] > date.strftime('%Y-%m-%d')[8:]:
+            return row, None
     return ()
 
 
 def get_message_str(next_day) -> str:
-    day = datetime.datetime.strptime(next_day['WeekStarting'], '%Y-%m-%dT%H:%M:%S').strftime('%A, %b %d')
+    day = datetime.datetime.strptime(next_day['CollectionDate'], '%Y-%m-%d').strftime('%A, %b %d')
     collection_items = ''.join(
         key + '\n'
         for key, value in next_day.items()
-        if len(value) == 1 and value != '0'
+        if value == 'F'
     )
 
     return f"""
