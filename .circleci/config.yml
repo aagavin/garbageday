@@ -18,7 +18,8 @@ jobs:
       - run:
           name: zip
           command: |
-            ls -a
+            pwd
+            ls -la
             zip -r lambda.zip .
       - store_artifacts:
           path: ./lambda.zip
