@@ -7,7 +7,7 @@ jobs:
       # use `-browsers` prefix for selenium tests, e.g. `3.6.1-browsers`
       # Specify service dependencies here if necessary
       # documented at https://circleci.com/docs/2.0/circleci-images/
-      - image: circleci/python:3.7.2
+      - image: cimg/python:3.9
     working_directory: ~/repo
     steps:
       - checkout
@@ -20,7 +20,7 @@ jobs:
       - run:
           name: install dependencies
           command: |
-            python3 -m venv venv
+            python -m venv venv
             . venv/bin/activate
             pip install -r requirements.txt -t .
             zip -r lambda.zip .
@@ -37,7 +37,7 @@ jobs:
             - lambda.zip
   deploy:
     docker:
-      - image: circleci/node:11.0.0
+      - image: cimg/node:current-browsers
     working_directory: ~/repo
     steps:
       - attach_workspace:
