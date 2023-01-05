@@ -60,11 +60,12 @@ def get_collection_schedule(event) -> tuple:
 
 
 def get_message_str(next_day) -> str:
+    next_day.pop("_id", None)
     day = datetime.datetime.strptime(next_day['CollectionDate'], '%Y-%m-%d').strftime('%A, %b %d')
     collection_items = ''.join(
         key + '\n'
         for key, value in next_day.items()
-        if value == 'F'
+        if len(value) == 1 and value != '0'
     )
 
     return f"""
