@@ -17,7 +17,7 @@ SMPT_CONTEXT = ssl.create_default_context()
 
 
 def get_collection_schedule(event) -> tuple:
-    area_date = event['address']
+    area_date = event
     date = datetime.datetime.now()
     # gsheet = session.get(SHEET_URL, follow_redirects=True).json()
     sheet = open('pickup-schedule-2023.json')
@@ -29,7 +29,7 @@ def get_collection_schedule(event) -> tuple:
         date_diff = date - parsed_date
         if date_diff.days <= 7:
             return row
-        return ()
+    return ()
 
 
 def get_message_str(next_day) -> str:
@@ -48,8 +48,8 @@ Items Collected:
 {collection_items}"""
 
 
-def lambda_handler(user: dict):
-    schedule: tuple = get_collection_schedule(user)
+def lambda_handler(address: str):
+    schedule: tuple = get_collection_schedule(address)
     if not schedule:
         print(NO_RESULTS_ERROR)
         raise ValueError(NO_RESULTS_ERROR)
@@ -71,4 +71,4 @@ if __name__ == "__main__":
     user = {
         "address": os.environ['ADDRESS']
     }
-    lambda_handler(user)
+    lambda_handler(os.environ['ADDRESS'])
