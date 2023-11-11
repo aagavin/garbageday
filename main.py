@@ -63,7 +63,7 @@ def lambda_handler(address: str):
 
     with smtplib.SMTP_SSL(SMPT_DOMAIN, SMPT_PORT, context=SMPT_CONTEXT) as server:
         server.login(SMPT_USERNAME, SMPT_PASS)
-        mail = server.send_message(email)
+        server.send_message(email)
     return f'result successfully sent {message}'
 
 
