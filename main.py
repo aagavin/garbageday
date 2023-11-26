@@ -27,7 +27,7 @@ def get_collection_schedule(event) -> tuple:
     for row in day_list_filtered:
         parsed_date = datetime.datetime.strptime(row['CollectionDate'], '%Y-%m-%d')
         date_diff = date - parsed_date
-        if date_diff.days <= 7:
+        if parsed_date > date and date_diff.days <= 7:
             return row
     return ()
 
