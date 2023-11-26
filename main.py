@@ -16,8 +16,7 @@ SMPT_DOMAIN = os.getenv('SMPT_DOMAIN')
 SMPT_CONTEXT = ssl.create_default_context()
 
 
-def get_collection_schedule(event) -> tuple:
-    area_date = event
+def get_collection_schedule(area_date) -> tuple:
     date = datetime.datetime.now()
     # gsheet = session.get(SHEET_URL, follow_redirects=True).json()
     sheet = open('pickup-schedule-2023.json')
@@ -32,7 +31,7 @@ def get_collection_schedule(event) -> tuple:
     return ()
 
 
-def get_message_str(next_day) -> str:
+def get_message_str(next_day: dict) -> str:
     next_day.pop("_id", None)
     day = datetime.datetime.strptime(next_day['CollectionDate'], '%Y-%m-%d').strftime('%A, %b %d')
     collection_items = ''.join(
@@ -48,14 +47,15 @@ Items Collected:
 {collection_items}"""
 
 
-def lambda_handler(address: str):
-    schedule: tuple = get_collection_schedule(address)
+if __name__ == "__main__":
+    address = os.environ['ADDRESS']
+    schedule: dict = get_collection_schedule(address)
     if not schedule:
         print(NO_RESULTS_ERROR)
         raise ValueError(NO_RESULTS_ERROR)
-    
+
     message = get_message_str(schedule)
-    
+
     email = EmailMessage()
     email.set_content(message)
     email['From'] = SMPT_FROM
@@ -64,11 +64,4 @@ def lambda_handler(address: str):
     with smtplib.SMTP_SSL(SMPT_DOMAIN, SMPT_PORT, context=SMPT_CONTEXT) as server:
         server.login(SMPT_USERNAME, SMPT_PASS)
         server.send_message(email)
-    return f'result successfully sent {message}'
-
-
-if __name__ == "__main__":
-    user = {
-        "address": os.environ['ADDRESS']
-    }
-    lambda_handler(os.environ['ADDRESS'])
+    print(f'result successfully sent {message}')
