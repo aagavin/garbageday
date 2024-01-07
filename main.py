@@ -19,7 +19,7 @@ SMPT_CONTEXT = ssl.create_default_context()
 def get_collection_schedule(area_date) -> tuple:
     date = datetime.datetime.now()
     # gsheet = session.get(SHEET_URL, follow_redirects=True).json()
-    sheet = open('pickup-schedule-2023.json')
+    sheet = open('pickup-schedule-2024.json')
     json_sheet = json.load(sheet)
     day_list_filtered = [d for d in json_sheet if d['Schedule'] == area_date]
 
