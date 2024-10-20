@@ -50,7 +50,7 @@ Items Collected:
 
 if __name__ == "__main__":
     address = os.environ['ADDRESS']
-    schedule: dict = get_collection_schedule(address)
+    schedule: tuple = get_collection_schedule(address)
     if not schedule:
         print(NO_RESULTS_ERROR)
         raise ValueError(NO_RESULTS_ERROR)
