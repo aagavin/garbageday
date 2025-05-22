@@ -5,5 +5,4 @@ Garbage Day
 ===========
 
 
-aws lambda function to get collection schedule for an address
-
+aws lambda function to get collection schedule for a pick up secdule
