@@ -20,7 +20,7 @@ def get_collection_schedule(area_date) -> tuple:
     date = datetime.datetime.now()
     # update the sheet from here
     # https://open.toronto.ca/dataset/solid-waste-pickup-schedule/
-    sheet = open('pickup-schedule-2025.json')
+    sheet = open('pickup-schedule.json')
     json_sheet = json.load(sheet)
     day_list_filtered = [d for d in json_sheet if d['Calendar'] == area_date]
 
