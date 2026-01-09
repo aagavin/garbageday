@@ -20,12 +20,12 @@ def get_collection_schedule(area_date) -> tuple:
     date = datetime.datetime.now()
     # update the sheet from here
     # https://open.toronto.ca/dataset/solid-waste-pickup-schedule/
-    sheet = open('pickup-schedule-2025.json')
+    sheet = open('pickup-schedule.json')
     json_sheet = json.load(sheet)
     day_list_filtered = [d for d in json_sheet if d['Calendar'] == area_date]
 
     for row in day_list_filtered:
-        parsed_date = datetime.datetime.strptime(row['WeekStarting'], '%Y-%m-%d')
+        parsed_date = datetime.datetime.strptime(row['WeekStarting'], '%d/%m/%y')
         date_diff = date - parsed_date
         if parsed_date > date and date_diff.days <= 7:
             return row
@@ -34,7 +34,7 @@ def get_collection_schedule(area_date) -> tuple:
 
 def get_message_str(next_day: dict) -> str:
     next_day.pop("_id", None)
-    day = datetime.datetime.strptime(next_day['WeekStarting'], '%Y-%m-%d').strftime('%A, %b %d')
+    day = datetime.datetime.strptime(next_day['WeekStarting'], '%d/%m/%y').strftime('%A, %b %d')
     collection_items = ''.join(
         key + '\n'
         for key, value in next_day.items()
