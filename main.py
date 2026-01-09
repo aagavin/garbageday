@@ -2,7 +2,7 @@ import os
 import smtplib
 import ssl
 import json
-import datetime
+from datetime import datetime
 from email.message import EmailMessage
 
 NO_RESULTS_ERROR = 'No results found'
@@ -16,16 +16,19 @@ SMPT_DOMAIN = os.getenv('SMPT_DOMAIN')
 SMPT_CONTEXT = ssl.create_default_context()
 
 
+def format_date(date: str) -> datetime:
+    return datetime.strptime(date, '%m/%d/%y')
+
 def get_collection_schedule(area_date) -> tuple:
-    date = datetime.datetime.now()
+    date = datetime.now()
     # update the sheet from here
     # https://open.toronto.ca/dataset/solid-waste-pickup-schedule/
-    sheet = open('pickup-schedule-2025.json')
+    sheet = open('pickup-schedule.json')
     json_sheet = json.load(sheet)
     day_list_filtered = [d for d in json_sheet if d['Calendar'] == area_date]
 
     for row in day_list_filtered:
-        parsed_date = datetime.datetime.strptime(row['WeekStarting'], '%Y-%m-%d')
+        parsed_date = format_date(row['WeekStarting'])
         date_diff = date - parsed_date
         if parsed_date > date and date_diff.days <= 7:
             return row
@@ -34,7 +37,7 @@ def get_collection_schedule(area_date) -> tuple:
 
 def get_message_str(next_day: dict) -> str:
     next_day.pop("_id", None)
-    day = datetime.datetime.strptime(next_day['WeekStarting'], '%Y-%m-%d').strftime('%A, %b %d')
+    day = format_date(next_day['WeekStarting']).strftime('%A, %b %d')
     collection_items = ''.join(
         key + '\n'
         for key, value in next_day.items()
