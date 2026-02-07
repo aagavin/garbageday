@@ -19,7 +19,7 @@ SMPT_CONTEXT = ssl.create_default_context()
 def format_date(date: str) -> datetime:
     return datetime.strptime(date, '%m/%d/%y')
 
-def get_collection_schedule(area_date) -> tuple:
+def get_collection_schedule(area_date) -> dict:
     date = datetime.now()
     # update the sheet from here
     # https://open.toronto.ca/dataset/solid-waste-pickup-schedule/
@@ -31,8 +31,13 @@ def get_collection_schedule(area_date) -> tuple:
         parsed_date = format_date(row['WeekStarting'])
         date_diff = date - parsed_date
         if parsed_date > date and date_diff.days <= 7:
+            # since the city stopped doing recycling
+            # it doesn't return when it's recycling day
+            # hence this hard coding
+            if row['Garbage'] == '0':
+                row['Recycling'] = 'F'
             return row
-    return ()
+    return {}
 
 
 def get_message_str(next_day: dict) -> str:
@@ -53,7 +58,7 @@ Items Collected:
 
 if __name__ == "__main__":
     address = os.environ['ADDRESS']
-    schedule: tuple = get_collection_schedule(address)
+    schedule: dict = get_collection_schedule(address)
     if not schedule:
         print(NO_RESULTS_ERROR)
         raise ValueError(NO_RESULTS_ERROR)
